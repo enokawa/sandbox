@@ -25,15 +25,13 @@ class AnotherSection(SequentialTaskSet):
         pass
 
 class LoggedInUser(HttpUser):
+    weight = 1
     host = "https://enokawa.dev"
     wait_time = constant(1)
     tasks = [ForumSection]
 
 class AnotherUser(HttpUser):
+    weight = 1
     host = "https://enokawa.dev"
     wait_time = constant(1)
     tasks = [AnotherSection]
-
-class StressUser(User):
-  host = "https://enokawa.dev"
-  tasks = {LoggedInUser: 1, AnotherUser: 1}
