@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -53,16 +52,10 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "400 bad request", http.StatusBadRequest)
 		return
 	}
+	log.Println(articleId)
 
 	article := models.Article1
-	jsonData, err := json.Marshal(article)
-	if err != nil {
-		errMsg := fmt.Sprintf("fatail to encode json (articleID %d)\n", articleId)
-		http.Error(w, errMsg, http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(jsonData)
+	json.NewEncoder(w).Encode(article)
 }
 
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
