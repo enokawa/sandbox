@@ -34,7 +34,7 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		var err error
 		page, err = strconv.Atoi(p[0])
 		if err != nil {
-			http.Error(w, "invalid query parameter", http.StatusBadRequest)
+			http.Error(w, "invalid query parameter\n", http.StatusBadRequest)
 			return
 		}
 	} else {
@@ -49,7 +49,7 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	articleId, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
-		http.Error(w, "400 bad request", http.StatusBadRequest)
+		http.Error(w, "400 bad request\n", http.StatusBadRequest)
 		return
 	}
 	log.Println(articleId)
@@ -61,21 +61,21 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
-		http.Error(w, "fail to decode json", http.StatusBadRequest)
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 		return
 	}
 
-	article := models.Article1
+	article := reqArticle
 	json.NewEncoder(w).Encode(article)
 }
 
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
-	comment := models.Comment1
-	jsonData, err := json.Marshal(comment)
-	if err != nil {
-		http.Error(w, "fatal to encode json", http.StatusInternalServerError)
+	var reqComment models.Comment
+	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadGateway)
 		return
 	}
 
-	w.Write(jsonData)
+	comment := reqComment
+	json.NewEncoder(w).Encode(comment)
 }
