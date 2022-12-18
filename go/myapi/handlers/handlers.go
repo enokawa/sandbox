@@ -59,14 +59,14 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
-	article := models.Article1
-	jsonData, err := json.Marshal(article)
-	if err != nil {
-		http.Error(w, "fatal to encode json", http.StatusInternalServerError)
+	var reqArticle models.Article
+	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		http.Error(w, "fail to decode json", http.StatusBadRequest)
 		return
 	}
 
-	w.Write(jsonData)
+	article := models.Article1
+	json.NewEncoder(w).Encode(article)
 }
 
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
