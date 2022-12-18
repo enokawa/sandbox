@@ -49,7 +49,7 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	articleId, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
-		http.Error(w, "400 bad request\n", http.StatusBadRequest)
+		http.Error(w, "invalid query parameter\n", http.StatusBadRequest)
 		return
 	}
 	log.Println(articleId)
