@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/enokawa/myapi/handlers"
+	"github.com/enokawa/sandbox/go/myapi/handlers"
 	"github.com/gorilla/mux"
 )
 

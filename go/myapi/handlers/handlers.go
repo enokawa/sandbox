@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/enokawa/myapi/models"
+	"github.com/enokawa/sandbox/go/myapi/models"
 	"github.com/gorilla/mux"
 )
 

@@ -1,4 +1,4 @@
-module github.com/enokawa/myapi
+module github.com/enokawa/sandbox/go/myapi
 
 go 1.18
 
