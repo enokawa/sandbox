@@ -25,23 +25,43 @@ func main() {
 	}
 	defer db.Close()
 
-	article := models.Article{
-		Title:    "insert test",
-		Contents: "Can I insert data correctly?",
-		UserName: "enokawa",
-	}
-	const sqlStr = `
-		insert into articles (title, contents, username, nice, created_at) values
-		(?, ?, ?, 0, now());
-	`
-	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
+	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println(result.LastInsertId())
-	fmt.Println(result.RowsAffected())
+	article_id := 1
+	const sqlGetNice = `select nice from articles where article_id = ?;`
+	row := tx.QueryRow(sqlGetNice, article_id)
+	if err := row.Err(); err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+		return
+	}
+
+	var article models.Article
+	err = row.Scan(&article.NiceNum)
+	if err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+		return
+	}
+
+	article.NiceNum++
+
+	const sqlUpdateNice = `update articles set nice = ? where article_id = ?;`
+	if _, err := tx.Exec(sqlUpdateNice, article.NiceNum, article_id); err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+		return
+	}
+
+	if err := tx.Commit(); err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+		return
+	}
 
 	r := mux.NewRouter()
 
