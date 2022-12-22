@@ -28,3 +28,7 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 
 	return newArticle, nil
 }
+
+func ListArticle(db *sql.DB, page int) ([]models.Article, error) {
+	return []models.Article{}, nil
+}
