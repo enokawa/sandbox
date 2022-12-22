@@ -10,14 +10,21 @@ import (
 func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	const sqlStr = `
 	insert into articles (title, contents, username, nice, created_at) values
-	(?, ?, ?, ?, now());
+	(?, ?, ?, 0, now());
 	`
 
-	_, err := db.Exec(sqlStr, &article.Title, &article.Contents, &article.UserName, &article.NiceNum)
+	var newArticle models.Article
+	newArticle.Title, newArticle.Contents, newArticle.UserName = article.Title, article.Contents, article.UserName
+
+	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
 	if err != nil {
 		fmt.Println(err)
-		return article, nil
+		return models.Article{}, nil
 	}
 
-	return article, nil
+	id, _ := result.LastInsertId()
+
+	newArticle.ID = int(id)
+
+	return newArticle, nil
 }
