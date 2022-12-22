@@ -1,16 +1,13 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/enokawa/sandbox/go/myapi/models"
-	"github.com/enokawa/sandbox/go/myapi/repositories"
 	"github.com/gorilla/mux"
 )
 
@@ -19,28 +16,13 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-	dbUser := "docker"
-	dbPassword := "docker"
-	dbDatabase := "sampledb"
-	dbConn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
-
-	db, err := sql.Open("mysql", dbConn)
-	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "can't connect to database", http.StatusInternalServerError)
-	}
-
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 		return
 	}
 
-	article, err := repositories.InsertArticle(db, reqArticle)
-	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "fail to insert record", http.StatusInternalServerError)
-	}
+	article := reqArticle
 	json.NewEncoder(w).Encode(article)
 }
 
