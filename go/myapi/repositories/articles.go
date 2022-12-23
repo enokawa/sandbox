@@ -56,3 +56,29 @@ func ListArticle(db *sql.DB, page int) ([]models.Article, error) {
 
 	return articleArray, nil
 }
+
+func GetArticle(db *sql.DB, id int) (models.Article, error) {
+	const articleSql = `
+		select article_id, title, contents, username, nice
+		from articles
+		where article_id = ?
+	`
+
+	row := db.QueryRow(articleSql, id)
+	if err := row.Err(); err != nil {
+		return models.Article{}, row.Err()
+	}
+
+	var article models.Article
+	var createdTime sql.NullTime
+	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
+	if err != nil {
+		return models.Article{}, nil
+	}
+
+	if createdTime.Valid {
+		article.CreatedAt = createdTime.Time
+	}
+
+	return article, nil
+}
