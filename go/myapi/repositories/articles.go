@@ -82,3 +82,28 @@ func GetArticle(db *sql.DB, id int) (models.Article, error) {
 
 	return article, nil
 }
+
+func UpdateNiceNum(db *sql.DB, id int) error {
+	const sqlGetNice = `select nice from articles where article_id = ?`
+	const sqlUpdateNice = `update articles set nice = ? where article_id = ?`
+
+	row := db.QueryRow(sqlGetNice, id)
+	if err := row.Err(); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	var article models.Article
+	err := row.Scan(&article.NiceNum)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	if _, err := db.Exec(sqlUpdateNice, article.NiceNum+1, id); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
