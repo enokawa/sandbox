@@ -9,25 +9,20 @@ import (
 
 func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
 	const sqlStr = `
-		insert into comments
-		(article_id, message, created_time)
-		values (?, ?, now())
+		insert into comments (article_id, message, created_at) values
+		(?, ?, now())
 	`
 	var newComment models.Comment
 	newComment.ArticleID, newComment.Message = comment.ArticleID, comment.Message
 
-	result, err := db.Exec(sqlStr, &newComment.ArticleID, &newComment.Message)
+	result, err := db.Exec(sqlStr, comment.ArticleID, comment.Message)
 	if err != nil {
 		fmt.Println(err)
 		return models.Comment{}, err
 	}
 
-	lastInsertId, err := result.LastInsertId()
-	if err != nil {
-		fmt.Println(err)
-		return models.Comment{}, err
-	}
-	newComment.CommentID = int(lastInsertId)
+	id, _ := result.LastInsertId()
+	newComment.CommentID = int(id)
 
 	return newComment, nil
 }
