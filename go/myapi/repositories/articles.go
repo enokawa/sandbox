@@ -57,9 +57,9 @@ func ListArticle(db *sql.DB, page int) ([]models.Article, error) {
 	return articleArray, nil
 }
 
-func GetArticle(db *sql.DB, id int) (models.Article, error) {
+func SelectArticleDetail(db *sql.DB, id int) (models.Article, error) {
 	const articleSql = `
-		select article_id, title, contents, username, nice
+		select *
 		from articles
 		where article_id = ?
 	`
