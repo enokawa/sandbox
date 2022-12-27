@@ -1,8 +1,6 @@
 package repositories_test
 
 import (
-	"database/sql"
-	"fmt"
 	"testing"
 
 	"github.com/enokawa/sandbox/go/myapi/models"
@@ -12,17 +10,6 @@ import (
 )
 
 func TestSelectArticleDetail(t *testing.T) {
-	dbUser := "docker"
-	dbPassword := "docker"
-	dbDatabase := "sampledb"
-	dbConn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
-
-	db, err := sql.Open("mysql", dbConn)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer db.Close()
-
 	tests := []struct {
 		testTitle string
 		expected  models.Article
@@ -50,7 +37,7 @@ func TestSelectArticleDetail(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.testTitle, func(t *testing.T) {
-			got, err := repositories.SelectArticleDetail(db, test.expected.ID)
+			got, err := repositories.SelectArticleDetail(testDB, test.expected.ID)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -71,5 +58,17 @@ func TestSelectArticleDetail(t *testing.T) {
 				t.Errorf("NiceNum: get %d but want %d", got.NiceNum, test.expected.NiceNum)
 			}
 		})
+	}
+}
+
+func TestSelectArticleList(t *testing.T) {
+	expectedNum := 5
+	got, err := repositories.SelectArticleList(testDB, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if num := len(got); num != expectedNum {
+		t.Errorf("want %d but got %d articles\n", expectedNum, num)
 	}
 }
