@@ -33,7 +33,7 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	return newArticle, nil
 }
 
-func ListArticle(db *sql.DB, page int) ([]models.Article, error) {
+func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	const sqlStr = `
 		select article_id, title, contents, username, nice
 		from articles
