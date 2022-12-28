@@ -97,3 +97,27 @@ func TestInsertArticle(t *testing.T) {
 		testDB.Exec(sqlStr, article.Title, article.Contents, article.UserName)
 	})
 }
+
+func TestUpdateNiceNum(t *testing.T) {
+	article := models.Article{
+		Title:    "UpdateTest",
+		Contents: "testtest",
+		UserName: "enokawa",
+	}
+	newArticle, err := repositories.InsertArticle(testDB, article)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if err := repositories.UpdateNiceNum(testDB, newArticle.ID); err != nil {
+		t.Error(err)
+	}
+
+	t.Cleanup(func() {
+		const sqlStr = `
+			delete from articles
+			where title = ? and contents = ? and username = ?
+		`
+		testDB.Exec(sqlStr, newArticle.ID, newArticle.Contents, newArticle.UserName)
+	})
+}
