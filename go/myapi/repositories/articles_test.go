@@ -106,11 +106,20 @@ func TestUpdateNiceNum(t *testing.T) {
 	}
 	newArticle, err := repositories.InsertArticle(testDB, article)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if err := repositories.UpdateNiceNum(testDB, newArticle.ID); err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+
+	after, err := repositories.SelectArticleDetail(testDB, newArticle.ID)
+	if err != nil {
+		t.Fatal("fail to get after data")
+	}
+
+	if after.NiceNum != 1 {
+		t.Errorf("fail to update nice num")
 	}
 
 	t.Cleanup(func() {
@@ -118,6 +127,6 @@ func TestUpdateNiceNum(t *testing.T) {
 			delete from articles
 			where title = ? and contents = ? and username = ?
 		`
-		testDB.Exec(sqlStr, newArticle.ID, newArticle.Contents, newArticle.UserName)
+		testDB.Exec(sqlStr, newArticle.Title, newArticle.Contents, newArticle.UserName)
 	})
 }
