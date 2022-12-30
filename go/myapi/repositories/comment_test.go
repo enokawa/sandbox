@@ -7,6 +7,46 @@ import (
 	"github.com/enokawa/sandbox/go/myapi/repositories"
 )
 
+func TestSelectComment(t *testing.T) {
+	article := models.Article{
+		Title:    "SelectCommentTest",
+		Contents: "SelectCommentTest",
+		UserName: "enokawa",
+	}
+	newArticle, err := repositories.InsertArticle(testDB, article)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	before := models.Comment{
+		ArticleID: newArticle.ID,
+		Message:   "SelectCommentTest",
+	}
+	newComment, err := repositories.InsertComment(testDB, before)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	after, err := repositories.SelectComment(testDB, newComment.CommentID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, v := range after {
+		if before.Message != v.Message {
+			t.Errorf("new comment message is expected %s but got %s\n", before.Message, v.Message)
+		}
+	}
+
+	t.Cleanup(func() {
+		const commentSql = `delete from comments where comment_id = ?`
+		testDB.Exec(commentSql, newComment.CommentID)
+
+		const articleSql = `delete from articles where article_id = ?`
+		testDB.Exec(articleSql, newArticle.ID)
+	})
+}
+
 func TestInsertComment(t *testing.T) {
 	comment := models.Comment{
 		ArticleID: 1,
