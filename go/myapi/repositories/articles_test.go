@@ -5,6 +5,7 @@ import (
 
 	"github.com/enokawa/sandbox/go/myapi/models"
 	"github.com/enokawa/sandbox/go/myapi/repositories"
+	"github.com/enokawa/sandbox/go/myapi/repositories/testdata"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -16,22 +17,10 @@ func TestSelectArticleDetail(t *testing.T) {
 	}{
 		{
 			testTitle: "subtest1",
-			expected: models.Article{
-				ID:       1,
-				Title:    "firstPost",
-				Contents: "This is my first blog",
-				UserName: "enokawa",
-				NiceNum:  4,
-			},
+			expected:  testdata.ArticleTestData[0],
 		}, {
 			testTitle: "subtest1",
-			expected: models.Article{
-				ID:       2,
-				Title:    "2nd",
-				Contents: "Second blog post",
-				UserName: "enokawa",
-				NiceNum:  4,
-			},
+			expected:  testdata.ArticleTestData[1],
 		},
 	}
 
