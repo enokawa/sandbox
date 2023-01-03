@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"os/exec"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -11,12 +12,30 @@ import (
 
 var testDB *sql.DB
 
-func setup() error {
-	dbUser := "docker"
-	dbPassword := "docker"
-	dbDatabase := "sampledb"
-	dbConn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+var (
+	dbUser     = "docker"
+	dbPassword = "docker"
+	dbDatabase = "sampledb"
+	dbConn     = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+)
 
+func setup() error {
+	if err := connectDB(); err != nil {
+		return err
+	}
+	if err := cleanupDB(); err != nil {
+		fmt.Println("cleanup", err)
+		return err
+	}
+	if err := setupTestData(); err != nil {
+		fmt.Println("setup", err)
+		return err
+	}
+
+	return nil
+}
+
+func connectDB() error {
 	var err error
 	testDB, err = sql.Open("mysql", dbConn)
 	if err != nil {
@@ -26,7 +45,28 @@ func setup() error {
 	return nil
 }
 
+func setupTestData() error {
+	cmd := exec.Command("mysql", "-h", "127.0.0.1", "-udocker", "-Dsampledb", "-pdocker", "-e", "source ./testdata/setupDB.sql")
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func cleanupDB() error {
+	cmd := exec.Command("mysql", "-h", "127.0.0.1", "-udocker", "-Dsampledb", "-pdocker", "-e", "source ./testdata/cleanupDB.sql")
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func teardown() {
+	cleanupDB()
 	testDB.Close()
 }
 
