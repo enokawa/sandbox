@@ -19,7 +19,7 @@ func TestSelectArticleDetail(t *testing.T) {
 			testTitle: "subtest1",
 			expected:  testdata.ArticleTestData[0],
 		}, {
-			testTitle: "subtest1",
+			testTitle: "subtest2",
 			expected:  testdata.ArticleTestData[1],
 		},
 	}

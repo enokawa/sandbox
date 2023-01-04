@@ -8,7 +8,7 @@ var ArticleTestData = []models.Article{
 		Title:    "firstPost",
 		Contents: "This is my first blog",
 		UserName: "enokawa",
-		NiceNum:  4,
+		NiceNum:  2,
 	},
 	models.Article{
 		ID:       2,
