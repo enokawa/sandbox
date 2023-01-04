@@ -6,7 +6,6 @@ import (
 )
 
 func GetArticleService(articleID int) (models.Article, error) {
-	// TODO: sql.DB 型を手に入れて、変数 db に代入する
 	db, err := connectDB()
 	if err != nil {
 		return models.Article{}, err
@@ -25,4 +24,18 @@ func GetArticleService(articleID int) (models.Article, error) {
 	article.CommentList = append(article.CommentList, commentList...)
 
 	return article, nil
+}
+
+func PostArticleService(article models.Article) (models.Article, error) {
+	db, err := connectDB()
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	newArticle, err := repositories.InsertArticle(db, article)
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	return newArticle, nil
 }
