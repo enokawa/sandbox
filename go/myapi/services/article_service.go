@@ -53,3 +53,16 @@ func ListArticleService(page int) ([]models.Article, error) {
 
 	return models, nil
 }
+
+func PostNiceService(article models.Article) (models.Article, error) {
+	db, err := connectDB()
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	if err := repositories.UpdateNiceNum(db, article.ID); err != nil {
+		return models.Article{}, err
+	}
+
+	return article, nil
+}
