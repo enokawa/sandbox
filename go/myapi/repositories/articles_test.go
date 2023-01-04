@@ -10,6 +10,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func TestSelectArticleList(t *testing.T) {
+	expectedNum := len(testdata.ArticleTestData)
+	got, err := repositories.SelectArticleList(testDB, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if num := len(got); num != expectedNum {
+		t.Errorf("want %d but got %d articles\n", expectedNum, num)
+	}
+}
+
 func TestSelectArticleDetail(t *testing.T) {
 	tests := []struct {
 		testTitle string
@@ -50,18 +62,6 @@ func TestSelectArticleDetail(t *testing.T) {
 	}
 }
 
-func TestSelectArticleList(t *testing.T) {
-	expectedNum := len(testdata.ArticleTestData)
-	got, err := repositories.SelectArticleList(testDB, 1)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if num := len(got); num != expectedNum {
-		t.Errorf("want %d but got %d articles\n", expectedNum, num)
-	}
-}
-
 func TestInsertArticle(t *testing.T) {
 	article := models.Article{
 		Title:    "insertTest",
@@ -88,34 +88,15 @@ func TestInsertArticle(t *testing.T) {
 }
 
 func TestUpdateNiceNum(t *testing.T) {
-	article := models.Article{
-		Title:    "UpdateTest",
-		Contents: "testtest",
-		UserName: "enokawa",
-	}
-	newArticle, err := repositories.InsertArticle(testDB, article)
+	articleId := 1
+	err := repositories.UpdateNiceNum(testDB, articleId)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if err := repositories.UpdateNiceNum(testDB, newArticle.ID); err != nil {
-		t.Fatal(err)
-	}
+	got, _ := repositories.SelectArticleDetail(testDB, articleId)
 
-	after, err := repositories.SelectArticleDetail(testDB, newArticle.ID)
-	if err != nil {
-		t.Fatal("fail to get after data")
+	if got.NiceNum-testdata.ArticleTestData[articleId-1].NiceNum != 1 {
+		t.Errorf("fail to update nice num: expected %d but got %d", testdata.ArticleTestData[articleId].NiceNum, got.NiceNum)
 	}
-
-	if after.NiceNum != 1 {
-		t.Errorf("fail to update nice num")
-	}
-
-	t.Cleanup(func() {
-		const sqlStr = `
-			delete from articles
-			where title = ? and contents = ? and username = ?
-		`
-		testDB.Exec(sqlStr, newArticle.Title, newArticle.Contents, newArticle.UserName)
-	})
 }
