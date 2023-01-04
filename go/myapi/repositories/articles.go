@@ -23,7 +23,7 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
 	if err != nil {
 		fmt.Println(err)
-		return models.Article{}, nil
+		return models.Article{}, err
 	}
 
 	id, _ := result.LastInsertId()
@@ -44,7 +44,7 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
+	defer rows.Close()
 
 	articleArray := make([]models.Article, 0)
 	for rows.Next() {
