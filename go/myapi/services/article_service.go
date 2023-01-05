@@ -5,6 +5,20 @@ import (
 	"github.com/enokawa/sandbox/go/myapi/repositories"
 )
 
+func PostArticleService(article models.Article) (models.Article, error) {
+	db, err := connectDB()
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	newArticle, err := repositories.InsertArticle(db, article)
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	return newArticle, nil
+}
+
 func GetArticleService(articleID int) (models.Article, error) {
 	db, err := connectDB()
 	if err != nil {
@@ -24,20 +38,6 @@ func GetArticleService(articleID int) (models.Article, error) {
 	article.CommentList = append(article.CommentList, commentList...)
 
 	return article, nil
-}
-
-func PostArticleService(article models.Article) (models.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return models.Article{}, err
-	}
-
-	newArticle, err := repositories.InsertArticle(db, article)
-	if err != nil {
-		return models.Article{}, err
-	}
-
-	return newArticle, nil
 }
 
 func ListArticleService(page int) ([]models.Article, error) {
