@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/enokawa/sandbox/go/myapi/models"
+	"github.com/enokawa/sandbox/go/myapi/services"
 	"github.com/gorilla/mux"
 )
 
@@ -52,9 +53,13 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "invalid query parameter\n", http.StatusBadRequest)
 		return
 	}
-	log.Println(articleId)
 
-	article := models.Article1
+	article, err := services.GetArticleService(articleId)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
