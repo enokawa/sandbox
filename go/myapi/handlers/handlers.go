@@ -78,7 +78,12 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	article := reqArticle
+	article, err := services.PostNiceService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
