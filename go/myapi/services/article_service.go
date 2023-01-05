@@ -10,6 +10,7 @@ func PostArticleService(article models.Article) (models.Article, error) {
 	if err != nil {
 		return models.Article{}, err
 	}
+	defer db.Close()
 
 	newArticle, err := repositories.InsertArticle(db, article)
 	if err != nil {
@@ -17,6 +18,20 @@ func PostArticleService(article models.Article) (models.Article, error) {
 	}
 
 	return newArticle, nil
+}
+
+func GetArticleListService(page int) ([]models.Article, error) {
+	db, err := connectDB()
+	if err != nil {
+		return nil, err
+	}
+
+	models, err := repositories.SelectArticleList(db, page)
+	if err != nil {
+		return nil, err
+	}
+
+	return models, nil
 }
 
 func GetArticleService(articleID int) (models.Article, error) {
@@ -38,20 +53,6 @@ func GetArticleService(articleID int) (models.Article, error) {
 	article.CommentList = append(article.CommentList, commentList...)
 
 	return article, nil
-}
-
-func ListArticleService(page int) ([]models.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return nil, err
-	}
-
-	models, err := repositories.SelectArticleList(db, page)
-	if err != nil {
-		return nil, err
-	}
-
-	return models, nil
 }
 
 func PostNiceService(article models.Article) (models.Article, error) {
