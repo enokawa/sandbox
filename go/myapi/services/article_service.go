@@ -25,13 +25,14 @@ func GetArticleListService(page int) ([]models.Article, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer db.Close()
 
-	models, err := repositories.SelectArticleList(db, page)
+	articleList, err := repositories.SelectArticleList(db, page)
 	if err != nil {
 		return nil, err
 	}
 
-	return models, nil
+	return articleList, nil
 }
 
 func GetArticleService(articleID int) (models.Article, error) {
@@ -60,15 +61,19 @@ func PostNiceService(article models.Article) (models.Article, error) {
 	if err != nil {
 		return models.Article{}, err
 	}
+	defer db.Close()
 
-	if err := repositories.UpdateNiceNum(db, article.ID); err != nil {
-		return models.Article{}, err
-	}
-
-	newArticle, err := repositories.SelectArticleDetail(db, article.ID)
+	err = repositories.UpdateNiceNum(db, article.ID)
 	if err != nil {
 		return models.Article{}, err
 	}
 
-	return newArticle, nil
+	return models.Article{
+		ID:        article.ID,
+		Title:     article.Title,
+		Contents:  article.Contents,
+		UserName:  article.UserName,
+		NiceNum:   article.NiceNum + 1,
+		CreatedAt: article.CreatedAt,
+	}, nil
 }
