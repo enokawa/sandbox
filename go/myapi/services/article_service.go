@@ -64,5 +64,10 @@ func PostNiceService(article models.Article) (models.Article, error) {
 		return models.Article{}, err
 	}
 
-	return article, nil
+	newArticle, err := repositories.SelectArticleDetail(db, article.ID)
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	return newArticle, nil
 }
