@@ -94,6 +94,11 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	comment := reqComment
+	comment, err := services.PostCommentService(reqComment)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(comment)
 }
