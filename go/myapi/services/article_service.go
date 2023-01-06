@@ -5,14 +5,8 @@ import (
 	"github.com/enokawa/sandbox/go/myapi/repositories"
 )
 
-func PostArticleService(article models.Article) (models.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return models.Article{}, err
-	}
-	defer db.Close()
-
-	newArticle, err := repositories.InsertArticle(db, article)
+func (s *MyAppService) PostArticleService(article models.Article) (models.Article, error) {
+	newArticle, err := repositories.InsertArticle(s.db, article)
 	if err != nil {
 		return models.Article{}, err
 	}
@@ -20,14 +14,8 @@ func PostArticleService(article models.Article) (models.Article, error) {
 	return newArticle, nil
 }
 
-func GetArticleListService(page int) ([]models.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	articleList, err := repositories.SelectArticleList(db, page)
+func (s *MyAppService) GetArticleListService(page int) ([]models.Article, error) {
+	articleList, err := repositories.SelectArticleList(s.db, page)
 	if err != nil {
 		return nil, err
 	}
@@ -35,19 +23,13 @@ func GetArticleListService(page int) ([]models.Article, error) {
 	return articleList, nil
 }
 
-func GetArticleService(articleID int) (models.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return models.Article{}, err
-	}
-	defer db.Close()
-
-	article, err := repositories.SelectArticleDetail(db, articleID)
+func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) {
+	article, err := repositories.SelectArticleDetail(s.db, articleID)
 	if err != nil {
 		return models.Article{}, err
 	}
 
-	commentList, err := repositories.SelectCommentList(db, articleID)
+	commentList, err := repositories.SelectCommentList(s.db, articleID)
 	if err != nil {
 		return models.Article{}, err
 	}
@@ -56,14 +38,8 @@ func GetArticleService(articleID int) (models.Article, error) {
 	return article, nil
 }
 
-func PostNiceService(article models.Article) (models.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return models.Article{}, err
-	}
-	defer db.Close()
-
-	err = repositories.UpdateNiceNum(db, article.ID)
+func (s *MyAppService) PostNiceService(article models.Article) (models.Article, error) {
+	err := repositories.UpdateNiceNum(s.db, article.ID)
 	if err != nil {
 		return models.Article{}, err
 	}
