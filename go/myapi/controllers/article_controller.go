@@ -64,7 +64,7 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	articleId, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
-		err = apperrors.BadParam.Wrap(err, "queryparam must be number")
+		err = apperrors.BadParam.Wrap(err, "pathparam must be number")
 		http.Error(w, "invalid query parameter\n", http.StatusBadRequest)
 		return
 	}
